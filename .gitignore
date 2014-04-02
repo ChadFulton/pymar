@@ -1,0 +1,33 @@
+# Python
+*.pyc
+
+# Cython
+*.c
+*.so
+
+# IPython Notebooks
+.ipynb_checkpoints
+
+# Setup.py
+build
+dist
+
+# Documentation
+docs/source/generated
+
+# Egg metadata
+./*.egg-info
+
+# Mac OS X
+.DS_Store
+
+# LaTeX metadata
+*.aux
+*.fdb_latexmk
+*.fls
+*.idx
+*.ilg
+*.ind
+*.log
+*.out
+*.synctex.gz
