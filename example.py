@@ -60,7 +60,7 @@ initial_params = np.array(np.r_[
 ])
 
 # Estimate the parameters via MLE
-res = mod.fit(initial_params);
+res = mod.fit(initial_params, method='bfgs');
 params = res.params
 
 # Transform the unconstrained parameters to interpretable parameters
