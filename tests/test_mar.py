@@ -13,7 +13,7 @@ MIT Press Books. The MIT Press.
 import os
 import numpy as np
 import pandas as pd
-from results import results_mar
+from .results import results_mar
 from statsmodels.tsa.base.datetools import dates_from_range
 from ..mar_model import MAR
 from numpy.testing import assert_almost_equal, assert_equal, assert_raises

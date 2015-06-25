@@ -242,6 +242,7 @@ vector:
 """
 
 from __future__ import division
+from functools import reduce
 import numpy as np
 import pandas as pd
 import statsmodels.tsa.base.tsa_model as tsbase

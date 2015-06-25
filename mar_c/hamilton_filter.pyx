@@ -1,8 +1,8 @@
 import numpy as np
-cimport numpy as np
+cimport numpy as cnp
 cimport cython
 DTYPE = np.float64
-ctypedef np.float64_t dtype_t
+ctypedef cnp.float64_t dtype_t
 
 cdef extern from "math.h":
     double log(double x)
@@ -18,17 +18,17 @@ cdef extern from "math.h":
 def hamilton_filter(int nobs,
                     int nstates,
                     int order,
-                    np.ndarray[dtype_t, ndim = 2] transition_vectors not None,
-                    np.ndarray[dtype_t, ndim = 2, mode='c'] joint_probabilities not None,
-                    np.ndarray[dtype_t, ndim = 2, mode='c'] marginal_conditional_densities not None):
+                    cnp.ndarray[dtype_t, ndim = 2] transition_vectors not None,
+                    cnp.ndarray[dtype_t, ndim = 2, mode='c'] joint_probabilities not None,
+                    cnp.ndarray[dtype_t, ndim = 2, mode='c'] marginal_conditional_densities not None):
 
     if order == 0:
         return hamilton_filter_uncorrelated(nobs, nstates, transition_vectors, joint_probabilities, marginal_conditional_densities)
 
-    cdef np.ndarray[dtype_t, ndim = 2] joint_probabilities_t1
-    cdef np.ndarray[dtype_t, ndim = 1] joint_densities, marginal_densities
-    #cdef np.ndarray[dtype_t, ndim = 1] _joint_probabilities_t1 #, joint_probabilities_t
-    #cdef np.ndarray[dtype_t, ndim = 1] _joint_probabilities, _marginal_conditional_densities
+    cdef cnp.ndarray[dtype_t, ndim = 2] joint_probabilities_t1
+    cdef cnp.ndarray[dtype_t, ndim = 1] joint_densities, marginal_densities
+    #cdef cnp.ndarray[dtype_t, ndim = 1] _joint_probabilities_t1 #, joint_probabilities_t
+    #cdef cnp.ndarray[dtype_t, ndim = 1] _joint_probabilities, _marginal_conditional_densities
     cdef int nstatesk_1, nstatesk, nstatesk1, t, i, j, k, idx
     cdef dtype_t transition
 
@@ -92,12 +92,12 @@ def hamilton_filter(int nobs,
 @cython.wraparound(False)
 def hamilton_filter_uncorrelated(int nobs,
                                  int nstates,
-                                 np.ndarray[dtype_t, ndim = 2] transition_vectors not None,
-                                 np.ndarray[dtype_t, ndim = 2, mode='c'] joint_probabilities not None,
-                                 np.ndarray[dtype_t, ndim = 2, mode='c'] marginal_conditional_densities not None):
+                                 cnp.ndarray[dtype_t, ndim = 2] transition_vectors not None,
+                                 cnp.ndarray[dtype_t, ndim = 2, mode='c'] joint_probabilities not None,
+                                 cnp.ndarray[dtype_t, ndim = 2, mode='c'] marginal_conditional_densities not None):
 
-    cdef np.ndarray[dtype_t, ndim = 2] joint_probabilities_t1, marginal_probabilities_t1
-    cdef np.ndarray[dtype_t, ndim = 1] joint_densities, marginal_densities
+    cdef cnp.ndarray[dtype_t, ndim = 2] joint_probabilities_t1, marginal_probabilities_t1
+    cdef cnp.ndarray[dtype_t, ndim = 1] joint_densities, marginal_densities
     cdef int t, i, j, k, idx
     cdef dtype_t transition
 
@@ -126,11 +126,11 @@ def hamilton_filter_uncorrelated(int nobs,
 def tvtp_transition_vectors_right(int nobs,
                                  int nstates,
                                  int tvtp_order,
-                                 np.ndarray[dtype_t, ndim = 2] transitions,     # nstates * (nstates-1) x tvtp_order
-                                 np.ndarray[dtype_t, ndim = 2, mode='c'] exog): # t+1 x tvtp_order
+                                 cnp.ndarray[dtype_t, ndim = 2] transitions,     # nstates * (nstates-1) x tvtp_order
+                                 cnp.ndarray[dtype_t, ndim = 2, mode='c'] exog): # t+1 x tvtp_order
     cdef int n, t, i, j, k, idx
     cpdef dtype_t transition, colsum
-    cdef np.ndarray[dtype_t, ndim = 2] transition_vectors
+    cdef cnp.ndarray[dtype_t, ndim = 2] transition_vectors
 
     transition_vectors = np.zeros((nobs+1, nstates**2))
 
@@ -156,11 +156,11 @@ def tvtp_transition_vectors_right(int nobs,
 def tvtp_transition_vectors_left(int nobs,
                                  int nstates,
                                  int tvtp_order,
-                                 np.ndarray[dtype_t, ndim = 2] transitions,     # nstates * (nstates-1) x tvtp_order
-                                 np.ndarray[dtype_t, ndim = 2, mode='c'] exog): # t+1 x tvtp_order
+                                 cnp.ndarray[dtype_t, ndim = 2] transitions,     # nstates * (nstates-1) x tvtp_order
+                                 cnp.ndarray[dtype_t, ndim = 2, mode='c'] exog): # t+1 x tvtp_order
     cdef int n, t, i, j, k, idx
     cpdef dtype_t transition, colsum
-    cdef np.ndarray[dtype_t, ndim = 2] transition_vectors
+    cdef cnp.ndarray[dtype_t, ndim = 2] transition_vectors
 
     transition_vectors = np.zeros((nobs+1, nstates**2))
 
@@ -189,14 +189,14 @@ def tvtp_transition_vectors_left(int nobs,
 def marginal_conditional_densities(int nobs,
                                    int nstates,
                                    int order,
-                                   np.ndarray[dtype_t, ndim=2] params,
-                                   np.ndarray[dtype_t, ndim=1] stddevs,
-                                   np.ndarray[dtype_t, ndim=1] means,
-                                   np.ndarray[dtype_t, ndim=2] augmented):
+                                   cnp.ndarray[dtype_t, ndim=2] params,
+                                   cnp.ndarray[dtype_t, ndim=1] stddevs,
+                                   cnp.ndarray[dtype_t, ndim=1] means,
+                                   cnp.ndarray[dtype_t, ndim=2] augmented):
     cdef int nstatesk, t, i, j, k, idx, idx2, num, state
     cdef dtype_t var, top
-    cdef np.ndarray[dtype_t, ndim = 1] state_means, variances
-    cdef np.ndarray[dtype_t, ndim = 2] marginal_conditional_densities
+    cdef cnp.ndarray[dtype_t, ndim = 1] state_means, variances
+    cdef cnp.ndarray[dtype_t, ndim = 2] marginal_conditional_densities
 
     nstatesk = nstates**order
     marginal_conditional_densities = np.zeros((nobs, nstates**(order+1)))

@@ -3,7 +3,6 @@ Example - MAR Hamilton
 """
 import numpy as np
 import pandas as pd
-import statsmodels.api as sm
 from mar_model import MAR
 
 # Model Setup
@@ -20,7 +19,7 @@ f = requests.get('http://econ.korea.ac.kr/~cjkim/MARKOV/data/gdp4795.prn')
 
 # Hamilton's 1989 GNP dataset: Quarterly, 1947.1 - 1995.3
 data = pd.DataFrame(
-    [float(line) for line in f.content.split('\n')[:-3]],
+    [float(line) for line in f.text.split('\n')[:-3]],
     index=pd.date_range('1947-01-01', '1995-07-01', freq='QS'),
     columns=['gnp']
 )
@@ -68,17 +67,17 @@ final_params = params.copy()
 final_params[0:2] = np.exp(final_params[0:2]) / (1 + np.exp(final_params[0:2])) # transition probabilities
 final_params[6] = np.exp(-final_params[6]) # Standard deviation
 
-print 'Parameter Estimates'
-print '-------------------'
-print 'Transition probabilities:'
-print mod.transition_matrix(final_params[0:2])
-print 'AR Parameters (non-switching, here)'
-print final_params[2:6]
-print 'Standard Deviation (non-switching, here)'
-print final_params[6]
-print 'Means (switching)'
-print '- in state 1:', final_params[7]
-print '- in state 2:', final_params[8]
+print('Parameter Estimates')
+print('-------------------')
+print('Transition probabilities:')
+print(mod.transition_matrix(final_params[0:2]))
+print('AR Parameters (non-switching, here)')
+print(final_params[2:6])
+print('Standard Deviation (non-switching, here)')
+print(final_params[6])
+print('Means (switching)')
+print('- in state 1:', final_params[7])
+print('- in state 2:', final_params[8])
 
 # Filter the data
 (
